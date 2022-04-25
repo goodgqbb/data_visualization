@@ -22,7 +22,7 @@ def duixiangcunchu(courseid):
   response = requests.get('https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxfb2997f507abf89e&secret=168726b557fb7221c96955cec59b3347',verify=False)
   data ={
     "env": "prod-0gayxkvve034fe60",
-    "path": "visualization/"+courseid+".jpg"
+    "path": "visualization/"+courseid+"1.jpg"
   }
   #return str(response.json())
   #转json
@@ -34,11 +34,39 @@ def duixiangcunchu(courseid):
 
   data2={
     "Content-Type":(None,".jpg"),
-    "key": (None,"visualization/"+courseid+".jpg"),
+    "key": (None,"visualization/"+courseid+"1.jpg"),
     "Signature": (None,response.json()['authorization']),
     'x-cos-security-token': (None,response.json()['token']),
     'x-cos-meta-fileid': (None,response.json()['cos_file_id']),
-    'file': ('visualization.jpg',open(r"/app/wxcloudrun/visualization.jpg","rb"))
+    'file': ('visualization1.jpg',open(r"/app/wxcloudrun/visualization1.jpg","rb"))
+  }
+  #data2 = json.dumps(data2)
+  response2 = requests.post(response.json()['url'], files=data2,verify=False)
+  return response.json()["file_id"]
+
+#2
+def duixiangcunchu2(courseid):
+  #获取token
+  response = requests.get('https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxfb2997f507abf89e&secret=168726b557fb7221c96955cec59b3347',verify=False)
+  data ={
+    "env": "prod-0gayxkvve034fe60",
+    "path": "visualization/"+courseid+"2.jpg"
+  }
+  #return str(response.json())
+  #转json
+  data = json.dumps(data)
+  response = requests.post("https://api.weixin.qq.com/tcb/uploadfile?access_token="+response.json()['access_token'],data,verify=False)
+  print(response.json())
+  #response = json.loads(response.json())
+  #得到上传链接
+
+  data2={
+    "Content-Type":(None,".jpg"),
+    "key": (None,"visualization/"+courseid+"2.jpg"),
+    "Signature": (None,response.json()['authorization']),
+    'x-cos-security-token': (None,response.json()['token']),
+    'x-cos-meta-fileid': (None,response.json()['cos_file_id']),
+    'file': ('visualization2.jpg',open(r"/app/wxcloudrun/visualization2.jpg","rb"))
   }
   #data2 = json.dumps(data2)
   response2 = requests.post(response.json()['url'], files=data2,verify=False)
@@ -61,8 +89,7 @@ def upload():
     for font in pie[1]:
         font.set_fontproperties(mpl.font_manager.FontProperties(
             fname='/app/wxcloudrun/华文楷体.ttf'))
-    path = r'E:\竞赛数据集\设计大赛\1.jpg'
-    fig.savefig(path)
+    fig.savefig('/app/wxcloudrun/visualization1.jpg')
 
     fig = Figure(dpi = 100)
     label=['踩', '赞']
@@ -73,25 +100,11 @@ def upload():
     for font in pie[1]:
         font.set_fontproperties(mpl.font_manager.FontProperties(
             fname='/app/wxcloudrun/华文楷体.ttf'))
-    
-#     plt.figure(figsize=(10,10))#将画布设定为正方形，则绘制的饼图是正圆
-#     fig1 = plt.subplot(121)
-#     label=['Totally understand','So-so','Not good',"don't understand"]#定义饼图的标签，标签是列表
-#     explode=[0.01, 0.01, 0.01, 0.01]#设定各项距离圆心n个半径
-#     values=[json_data['完全明白'], json_data['一般般'], json_data['不大好'], json_data['完全听不懂']]
-#     plt.pie(values,explode=explode,labels=label,autopct='%1.1f%%')#绘制饼图
-#     plt.title('Student voting in this course 1')
+    fig.savefig('/app/wxcloudrun/visualization2.jpg')
 
-#     fig2 = plt.subplot(122)
-#     label=['bad', 'good']#定义饼图的标签，标签是列表
-#     explode=[0.01, 0.01]#设定各项距离圆心n个半径
-#     values=[json_data['踩'], json_data['赞']]
-#     plt.pie(values,explode=explode,labels=label,autopct='%3.1f%%')#绘制饼图
-#     plt.title('Student voting in this course 2')
-#     plt.savefig('/app/wxcloudrun/visualization.jpg')
-    fig.savefig('/app/wxcloudrun/visualization.jpg')
     a = duixiangcunchu(courseid)
-    b = {"re":a}
+    a2 = duixiangcunchu2(courseid)
+    b = {"re":a,"re2":a2}
     c = json.dumps(b)
     return c
     
